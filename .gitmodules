@@ -1,6 +1,0 @@
-[submodule "assignments/git-assignment2-142201025"]
-	path = assignments/git-assignment2-142201025
-	url = git@github.com:geetheswar-v/mlops2025w_142201025_git_assignment2.git
-[submodule "class/week4"]
-	path = class/week4
-	url = git@github.com:geetheswar-v/iris_classfication_task.git
