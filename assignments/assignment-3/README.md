@@ -1,0 +1,10 @@
+# Assignment 3
+
+| Roll Number | Name                  |
+|-------------|-----------------------|
+| 142201025   | Vedachalam Geetheswar |
+
+## Overview
+Learning Json/Toml and Configuration system through this assignment
+
+- Assignment Answers (non-coding/informative): [Assignment.md](./Assignment.md)
