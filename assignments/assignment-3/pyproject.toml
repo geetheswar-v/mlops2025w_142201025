@@ -5,10 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "pillow>=11.3.0",
     "torch>=2.8.0",
     "torchvision>=0.23.0",
     "tqdm>=4.67.1",
 ]
+
+[project.scripts]
+download-mnist = "resnet_pipeline.sample_datasets.mnist:main"
+download-cifar10 = "resnet_pipeline.sample_datasets.cifar10:main"
+inference = "resnet_pipeline.run_inference:main"
+tune = "resnet_pipeline.tune:main"
+train = "resnet_pipeline.train:main"
 
 [build-system]
 requires = ["hatchling>=1.24.2"]

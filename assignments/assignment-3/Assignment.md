@@ -36,6 +36,10 @@
 }
 ```
 
+- Here i also changed string to int for id
+
+> Even though json supports multi type, but for data integrity it is best to have in same types (for example in APIs, etc)
+
 ## Question 2
 
 ### a.How many feature flags are currently defined, and which ones are active?
@@ -71,3 +75,18 @@ max_connections = 1000
 
 - **`[feature_flags]`**: defines a single table named `feature_flags`.
 - **`[[feature_flags]]`**: defines an array of tables; each `[[...]]` block creates one element in that array (useful for listing multiple feature flag entries with their own fields).
+
+## Question 3
+[Github Link to whole](https://github.com/geetheswar-v/mlops2025w_142201025)
+
+### instructions
+
+```bash
+git clone "https://github.com/geetheswar-v/mlops2025w_142201025"
+cd mlops2025w_142201025/assignments/assignments/assignment-3
+uv sync
+uv run inference # for 3a
+uv run grid-search # for 3e
+```
+
+[Github Link Tree to assignment3](https://github.com/geetheswar-v/mlops2025w_142201025/tree/main/assignments/assignment-3)

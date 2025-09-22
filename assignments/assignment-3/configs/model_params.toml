@@ -1,0 +1,31 @@
+# Model hyperparameters per architecture
+
+[resnet34]
+learning_rate = 0.01
+optimizer = "sgd"
+momentum = 0.9
+
+[resnet50]
+learning_rate = 0.01
+optimizer = "sgd"
+momentum = 0.9
+
+[resnet101]
+learning_rate = 0.001
+optimizer = "adam"
+momentum = 0.0
+
+[resnet152]
+learning_rate = 0.001
+optimizer = "adam"
+momentum = 0.0
+
+# Additional generic defaults
+[defaults]
+batch_size = 16
+limit = 64
+output_dir = "outputs"
+architecture = "resnet34"
+epochs = 1
+per_class_train = 32
+per_class_val = 16

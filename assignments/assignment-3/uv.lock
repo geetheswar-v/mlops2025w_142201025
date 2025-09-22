@@ -357,6 +357,7 @@ name = "resnet-pipeline"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "pillow" },
     { name = "torch" },
     { name = "torchvision" },
     { name = "tqdm" },
@@ -364,6 +365,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "pillow", specifier = ">=11.3.0" },
     { name = "torch", specifier = ">=2.8.0" },
     { name = "torchvision", specifier = ">=0.23.0" },
     { name = "tqdm", specifier = ">=4.67.1" },
