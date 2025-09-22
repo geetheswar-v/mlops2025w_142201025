@@ -103,6 +103,33 @@ def download_cifar10(data_dir: str = "data"):
         shutil.rmtree(temp_dir)
 
 
+def update_data_config(data_dir: str, dataset_name: str = "cifar10"):
+    """Update data_config.json with the downloaded dataset path."""
+    import json
+    from pathlib import Path
+    
+    config_path = Path("configs/data_config.json")
+    if not config_path.exists():
+        print(f"Config file {config_path} not found, skipping update.")
+        return
+    
+    try:
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        config['data_source']['name'] = dataset_name
+        config['data_source']['path'] = str(Path(data_dir) / dataset_name)
+        config['data_source']['num_classes'] = 10
+        config['data_source']['input_shape'] = [32, 32, 3]
+        
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=4)
+        
+        print(f"✅ Updated {config_path} with dataset path: {config['data_source']['path']}")
+    except Exception as e:
+        print(f"Warning: Could not update config file: {e}")
+
+
 def main():
     import argparse
     
@@ -112,11 +139,25 @@ def main():
         default="data",
         help="Directory to save the dataset (default: data)"
     )
+    parser.add_argument(
+        "--update-data-config",
+        action="store_true",
+        default=True,
+        help="Update data_config.json with dataset path (default: True)"
+    )
+    parser.add_argument(
+        "--no-update-data-config",
+        dest="update_data_config",
+        action="store_false",
+        help="Skip updating data_config.json"
+    )
     
     args = parser.parse_args()
     
     try:
         download_cifar10(data_dir=args.data_dir)
+        if args.update_data_config:
+            update_data_config(args.data_dir, "cifar10")
     except Exception as e:
         print(f"Error downloading CIFAR-10: {e}")
         sys.exit(1)
