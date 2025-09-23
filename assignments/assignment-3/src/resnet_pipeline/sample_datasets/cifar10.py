@@ -125,7 +125,7 @@ def update_data_config(data_dir: str, dataset_name: str = "cifar10"):
         with open(config_path, 'w') as f:
             json.dump(config, f, indent=4)
         
-        print(f"✅ Updated {config_path} with dataset path: {config['data_source']['path']}")
+        print(f"Updated {config_path} with dataset path: {config['data_source']['path']}")
     except Exception as e:
         print(f"Warning: Could not update config file: {e}")
 

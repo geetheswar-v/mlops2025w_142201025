@@ -1,12 +1,12 @@
 {
     "data_source": {
-        "name": "mnist",
-        "path": "data/mnist",
+        "name": "cifar10",
+        "path": "data/cifar10",
         "num_classes": 10,
         "input_shape": [
-            28,
-            28,
-            1
+            32,
+            32,
+            3
         ]
     },
     "preprocessing": {
