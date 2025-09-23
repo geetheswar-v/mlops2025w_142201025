@@ -12,11 +12,10 @@ dependencies = [
 ]
 
 [project.scripts]
-download-mnist = "resnet_pipeline.sample_datasets.mnist:main"
-download-cifar10 = "resnet_pipeline.sample_datasets.cifar10:main"
-inference = "resnet_pipeline.run_inference:main" # 3a
-train = "resnet_pipeline.train:main" # 3d
-grid-search = "resnet_pipeline.tune:main" # 3e
+download = "resnet_pipeline.sample_datasets:main"
+inference = "resnet_pipeline:main_inference"
+train = "resnet_pipeline:main_train"
+grid-search = "resnet_pipeline:main_tune"
 
 [build-system]
 requires = ["hatchling>=1.24.2"]

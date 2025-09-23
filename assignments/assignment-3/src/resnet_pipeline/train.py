@@ -1,94 +1,145 @@
-import argparse
+import os
 import json
-import time
-from pathlib import Path
 
 import torch
-from torch import nn, optim
-from torch.utils.data import DataLoader
+import numpy as np
 
-from .models import prepare_model
-from .utils import (
-    load_json_config, load_toml_config, validate_dataset_path,
-    pick_train_test_dirs, stratified_subset, create_dataset_with_transform,
-    evaluate_model
-)
+from torch import nn
+from torch.utils.data import DataLoader, Subset
+from tqdm import tqdm
+
+from .helper.data import balanced_subset_indices
 
 
-def train_loop(model, loader, criterion, optimizer, device, epochs):
+def train_model(
+    train_dataset,
+    test_dataset,
+    model: nn.Module,
+    training_cfg: dict,
+    data_cfg: dict,
+    save: bool = True
+):
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
     model.train()
-    for _ in range(epochs):
-        for x, y in loader:
-            x, y = x.to(device), y.to(device)
+
+    limit = training_cfg.get("limit", -1)
+    if limit != -1:
+        train_indices = balanced_subset_indices(train_dataset, limit)
+        test_indices = balanced_subset_indices(test_dataset, limit)
+        train_dataset = Subset(train_dataset, train_indices)
+        test_dataset = Subset(test_dataset, test_indices)
+
+    batch_size = training_cfg.get("batch_size", 32)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    lr = training_cfg.get("lr", 0.001)
+    momentum = training_cfg.get("momentum", 0.0)
+    optimizer_name = training_cfg.get("optimizer", "sgd").lower()
+    epochs = training_cfg.get("epochs", 10)
+
+    if optimizer_name == "sgd":
+        optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    elif optimizer_name == "adam":
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    else:
+        raise ValueError(f"Unsupported optimizer: {optimizer_name}")
+
+    criterion = nn.CrossEntropyLoss()
+
+    epoch_metrics = []
+
+    # Training loop
+    for epoch in range(epochs):
+        model.train()
+        running_loss = 0.0
+        correct = 0
+        total = 0
+
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}", ncols=100):
+            images, labels = images.to(device), labels.to(device)
             optimizer.zero_grad()
-            loss = criterion(model(x), y)
+            outputs = model(images)
+            loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
+            running_loss += loss.item() * labels.size(0)
+            _, preds = torch.max(outputs, 1)
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
 
-def main():
-    parser = argparse.ArgumentParser(description='Config-driven training')
-    parser.add_argument('--data-config', default='configs/data_config.json')
-    parser.add_argument('--model-config', default='configs/model_params.toml')
-    parser.add_argument('--arch', default=None)
-    parser.add_argument('--save-model', action='store_true')
-    args = parser.parse_args()
+        train_acc = correct / total if total > 0 else 0.0
+        epoch_loss = running_loss / total
+        print(f"Epoch [{epoch+1}/{epochs}] - Loss: {epoch_loss:.4f}, Train Acc: {train_acc*100:.2f}%")
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    data_cfg = load_json_config(args.data_config)
-    model_cfg = load_toml_config(args.model_config)
+        # Record metrics for this epoch
+        epoch_metrics.append({
+            "epoch": epoch + 1,
+            "loss": epoch_loss,
+            "train_accuracy": train_acc
+        })
 
-    data_source = data_cfg['data_source']
-    validate_dataset_path(data_source)
+    # Evaluation on test set
+    model.eval()
+    correct = 0
+    total = 0
+    all_preds = []
+    all_labels = []
 
-    defaults = model_cfg.get('defaults', {})
-    arch = args.arch or defaults.get('architecture', 'resnet34')
-    arch_params = model_cfg.get(arch, {})
-
-    root = Path(data_source['path'])
-    train_dir, test_dir = pick_train_test_dirs(root)
-    full_train = create_dataset_with_transform(train_dir, data_cfg)
-    full_test = create_dataset_with_transform(test_dir, data_cfg)
-
-    train_subset = stratified_subset(full_train, defaults.get('per_class_train', 32), 0)
-    val_subset = stratified_subset(full_train, defaults.get('per_class_val', 16), 1)
-
-    batch_size = defaults.get('batch_size', 32)
-    train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(full_test, batch_size=batch_size, shuffle=False)
-
-    model = prepare_model(arch, device=device, num_classes=len(full_train.classes), pretrained=True)
-    
-    lr = arch_params.get('learning_rate', 0.001)
-    if arch_params.get('optimizer', 'adam').lower() == 'sgd':
-        optimizer = optim.SGD(model.parameters(), lr=lr, momentum=arch_params.get('momentum', 0.0))
+    if hasattr(test_dataset, "dataset"):
+        class_names = test_dataset.dataset.classes
     else:
-        optimizer = optim.Adam(model.parameters(), lr=lr)
+        class_names = test_dataset.classes
 
-    start = time.time()
-    train_loop(model, train_loader, nn.CrossEntropyLoss(), optimizer, device, defaults.get('epochs', 1))
-    val_acc = evaluate_model(model, val_loader, device)
-    test_acc = evaluate_model(model, test_loader, device)
-    elapsed = round(time.time() - start, 2)
+    with torch.no_grad():
+        for images, labels in tqdm(test_loader, desc="Testing", ncols=100):
+            images, labels = images.to(device), labels.to(device)
+            outputs = model(images)
+            _, preds = torch.max(outputs, 1)
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
+            all_preds.extend(preds.cpu().tolist())
+            all_labels.extend(labels.cpu().tolist())
 
-    output_dir = Path(defaults.get('output_dir', 'outputs'))
-    output_dir.mkdir(parents=True, exist_ok=True)
+    test_acc = correct / total if total > 0 else 0.0
+    print(f"Test Accuracy: {test_acc*100:.2f}%")
 
-    if args.save_model:
-        torch.save(model.state_dict(), output_dir / f"{data_source.get('name','model')}_{arch}.pt")
+    # Sample predictions
+    sample_predictions = []
+    indices = np.random.choice(len(all_preds), min(20, len(all_preds)), replace=False)
+    for i in indices:
+        sample_predictions.append({
+            "pred": class_names[all_preds[i]],
+            "true": class_names[all_labels[i]]
+        })
 
-    metrics = {
-        'architecture': arch,
-        'val_accuracy': val_acc,
-        'test_accuracy': test_acc,
-        'seconds': elapsed
+    # Prepare JSON results
+    results = {
+        "epochs": epoch_metrics,
+        "test_accuracy": test_acc,
+        "num_train_samples": len(train_dataset),
+        "num_test_samples": len(test_dataset),
+        "classes": class_names,
+        "sample_predictions": sample_predictions
     }
-    
-    with open(output_dir / 'train_result.json', 'w') as f:
-        json.dump(metrics, f, indent=2)
-    print(f"Val: {val_acc:.4f} | Test: {test_acc:.4f} | Time: {elapsed}s")
 
+    if save:
+        output_dir = training_cfg.get("output_dir", "results")
+        os.makedirs(output_dir, exist_ok=True)
+        data_name = data_cfg.get("name", "dataset")
+        architecture = training_cfg.get("architecture", "model")
 
-if __name__ == '__main__':
-    main()
+        # Save model
+        model_file = os.path.join(output_dir, f"{data_name}_{architecture}_trained.pth")
+        torch.save(model.state_dict(), model_file)
+        print(f"Trained model saved to {model_file}")
+
+        # Save JSON results
+        json_file = os.path.join(output_dir, f"{data_name}_{architecture}_training.json")
+        with open(json_file, "w") as f:
+            json.dump(results, f, indent=4)
+        print(f"Training results saved to {json_file}")
+
+    return model, results

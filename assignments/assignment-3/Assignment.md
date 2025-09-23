@@ -85,7 +85,7 @@ max_connections = 1000
 git clone "https://github.com/geetheswar-v/mlops2025w_142201025"
 cd mlops2025w_142201025/assignments/assignments/assignment-3
 uv sync
-uv run download-cifar10 # for downloading sample cifar-10 dataset
+uv run download --cifar10 # for downloading sample cifar-10 dataset
 uv run inference # for 3a
 uv run train # for 3d
 uv run grid-search # for 3e

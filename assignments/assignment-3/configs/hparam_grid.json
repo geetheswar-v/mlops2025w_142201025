@@ -1,6 +1,25 @@
 {
-  "architecture": "resnet34",
-  "learning_rates": [0.1, 0.01, 0.001],
-  "optimizers": ["adam", "sgd"],
-  "momentums": [0.5, 0.9]
+    "includes": ["resnet34", "resnet50", "resnet101"],
+    "override_params": {
+        "resnet34": {
+            "lr": [0.01],
+            "momentum": [0.9],
+            "epochs": [3],
+            "optimizer": ["sgd", "adam"]
+        },
+
+        "resnet50": {
+            "lr": [0.001],
+            "momentum": [0.5],
+            "epochs": [2],
+            "optimizer": ["sgd"]
+        },
+
+        "default": {
+          "lr": [1],
+          "momentum": [0.0],
+          "epochs": [1],
+          "optimizer": ["adam"]
+        }
+    }
 }
