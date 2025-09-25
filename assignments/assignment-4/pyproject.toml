@@ -1,0 +1,13 @@
+[project]
+name = "databases"
+version = "0.1.0"
+description = "Databases Assignment On SQL and NOSQL"
+authors = [
+    { name = "Geetheswar V", email = "geetheswar.edu@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.3.2",
+    "ucimlrepo>=0.0.7",
+]
