@@ -17,8 +17,6 @@ This assignment is based **Databases** and different types such *SQL*, *NOSQL* a
 The dataset used in this project is the **Online Retail Dataset**, provided by the UCI Machine Learning Repository:  
 [https://archive.ics.uci.edu/dataset/352/](https://archive.ics.uci.edu/dataset/352/)
 
-It was accessed using the `ucimlrepo` Python library.
-
 # Acknowledgment
 
 I gratefully acknowledge the UCI Machine Learning Repository and the dataset authors.  
