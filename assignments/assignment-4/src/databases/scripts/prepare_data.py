@@ -7,9 +7,7 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-from databases.utils import DATA_DIR, DATASET_URL
-
-sample_size = 2000
+from databases.utils import data_config
 
 def download_file(url: str, destination: Path):
     response = requests.get(url, stream=True, timeout=60)
@@ -40,29 +38,40 @@ def extract_excel(zip_path: Path, temp_dir: Path) -> Path:
     return next(temp_dir.rglob("*.xls*"))
 
 
-def convert_to_csv(excel_path: Path, output_dir: Path, sample_size: int) -> None:
+def convert_to_csv(
+    excel_path: Path, output_dir: Path, 
+    data_filepath: str, sample_filepath: str, 
+    sample_size: int, random_state: int):
+    
     output_dir.mkdir(parents=True, exist_ok=True)
     df = pd.read_excel(excel_path)
 
-    df.to_csv(output_dir / "data.csv", index=False)
-    df.sample(n=min(sample_size, len(df)), random_state=42).to_csv(
-        output_dir / "sample.csv", index=False
+    df.to_csv(data_filepath, index=False)
+    df.sample(n=min(sample_size, len(df)), random_state=random_state).to_csv(
+        sample_filepath, index=False
     )
 
 
-def main() -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    zip_path = DATA_DIR / "online_retail.zip"
-    temp_dir = DATA_DIR / "temp"
+def main():
+    dataset_url = data_config['url']
+    data_dir = Path(data_config['path'])
+    data_dir.mkdir(parents=True, exist_ok=True)
+    zip_path = data_dir / "online_retail.zip"
+    temp_dir = data_dir / "temp"
 
     print("Downloading dataset...")
-    download_file(DATASET_URL, zip_path)
+    download_file(dataset_url, zip_path)
 
     print("Extracting Excel file...")
     excel_path = extract_excel(zip_path, temp_dir)
 
     print("Converting to CSV...")
-    convert_to_csv(excel_path, DATA_DIR, sample_size)
+    convert_to_csv(excel_path, data_dir, 
+                   data_config['data_file'],
+                   data_config['sample_file'],
+                   data_config['sample_size'], 
+                   data_config['random_state']
+                  )
 
     print("Cleaning up...")
     zip_path.unlink()
