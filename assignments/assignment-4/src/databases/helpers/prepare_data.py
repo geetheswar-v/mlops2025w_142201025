@@ -7,8 +7,6 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-from databases.utils import data_config
-
 def download_file(url: str, destination: Path):
     response = requests.get(url, stream=True, timeout=60)
     response.raise_for_status()
@@ -53,6 +51,7 @@ def convert_to_csv(
 
 
 def main():
+    from databases.helpers.utils import data_config
     dataset_url = data_config['url']
     data_dir = Path(data_config['path'])
     data_dir.mkdir(parents=True, exist_ok=True)

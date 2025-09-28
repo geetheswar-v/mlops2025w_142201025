@@ -9,5 +9,5 @@ random_state = 42
 [sqlite]
 schema = "retail"
 db_path = "data/retail.db"
-sql_path = "sql/schema.sql"
+schema_path = "sql/schema.sql"
 

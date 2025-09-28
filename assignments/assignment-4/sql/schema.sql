@@ -18,7 +18,7 @@ PRAGMA foreign_keys = ON;
 
 -- Table for product-specific information
 CREATE TABLE Products (
-    StockCode   TEXT PRIMARY KEY,
+    StockCode   INTEGER PRIMARY KEY,
     Description TEXT
 );
 
@@ -26,14 +26,14 @@ CREATE TABLE Products (
 CREATE TABLE Invoices (
     InvoiceNo   TEXT PRIMARY KEY,
     InvoiceDate DATETIME NOT NULL,
-    CustomerID  TEXT,
+    CustomerID  INTEGER,
     Country     TEXT
 );
 
 -- Linking table for each line item of an invoice
 CREATE TABLE InvoiceItems (
     InvoiceNo TEXT NOT NULL,
-    StockCode TEXT NOT NULL,
+    StockCode INTEGER NOT NULL,
     Quantity  INTEGER NOT NULL,
     UnitPrice REAL NOT NULL,
     PRIMARY KEY (InvoiceNo, StockCode),
