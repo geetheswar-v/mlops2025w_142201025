@@ -16,7 +16,8 @@ dependencies = [
 
 [project.scripts]
 prepare_data = "databases.helpers.prepare_data:main"
-prepare_db = "databases.sqlite.prepare_db:main"
+prepare_db = "databases.sqlite:prepare_db"
+populate_db = "databases.sqlite:populate_db"
 
 
 [build-system]

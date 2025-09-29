@@ -17,8 +17,11 @@
 PRAGMA foreign_keys = ON;
 
 -- Table for product-specific information
+-- My Findings: First 5 characters of StockCode are numeric
+-- and have Unique "identifier" a letter or a sysmbol as the 6th character
+-- for differentiating between types of Same products
 CREATE TABLE Products (
-    StockCode   INTEGER PRIMARY KEY,
+    StockCode   TEXT PRIMARY KEY,
     Description TEXT
 );
 
@@ -33,7 +36,7 @@ CREATE TABLE Invoices (
 -- Linking table for each line item of an invoice
 CREATE TABLE InvoiceItems (
     InvoiceNo TEXT NOT NULL,
-    StockCode INTEGER NOT NULL,
+    StockCode TEXT NOT NULL,
     Quantity  INTEGER NOT NULL,
     UnitPrice REAL NOT NULL,
     PRIMARY KEY (InvoiceNo, StockCode),
