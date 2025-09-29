@@ -37,16 +37,17 @@ def extract_excel(zip_path: Path, temp_dir: Path) -> Path:
 
 def preprocess_dataset(df: pd.DataFrame) -> pd.DataFrame:
     # Some inovice records have missing CustomerID
-    # Some StockCodes are not valid (like 'POST', 'D', 'M', etc)
-
     df = df.dropna(subset=['InvoiceNo', 'StockCode', 'CustomerID'])
     
     # Ensure StockCode is valid
-    has_valid_length = df['StockCode'].str.len() >= 5
-    is_numeric_prefix = df['StockCode'].str[:5].str.isdigit()
-    df = df[has_valid_length & is_numeric_prefix].copy()
+    # has_valid_length = df['StockCode'].str.len() >= 5
+    # is_numeric_prefix = df['StockCode'].str[:5].str.isdigit()
+    # df = df[has_valid_length & is_numeric_prefix].copy()
+    
+    # No more Checking validity of StockCode as per new findings
     
     # Convert CustomerID to int
+    df = df.copy()
     df['CustomerID'] = df['CustomerID'].astype(int)
     
     return df

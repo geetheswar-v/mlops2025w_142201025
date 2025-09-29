@@ -20,6 +20,8 @@ PRAGMA foreign_keys = ON;
 -- My Findings: First 5 characters of StockCode are numeric
 -- and have Unique "identifier" a letter or a sysmbol as the 6th character
 -- for differentiating between types of Same products
+-- New things to note: Stockcode may also have not follow the above pattern
+-- I saw that some invoices had StockCode as 'POST', 'DOT', 'Bank Charges', etc
 CREATE TABLE Products (
     StockCode   TEXT PRIMARY KEY,
     Description TEXT
