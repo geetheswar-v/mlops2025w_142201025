@@ -1,38 +1,37 @@
 import sqlite3
-import os
+from pathlib import Path
 
-def create_database(db_file: str, sql_file: str) -> bool:
+def create_database(sqlite_url: Path, sql_file: Path) -> bool:
     # Check if the SQL file exists
-    if not os.path.exists(sql_file):
-        print(f"Error: The SQL file '{sql_file}' does not exist.")
+    if not sql_file.exists():
+        print(f"Error: The SQL file '{sql_file.name}' does not exist.")
         return False
     
     # Check if the database file already exists. If so, delete it.
-    if os.path.exists(db_file):
-        os.remove(db_file)
-        print(f"Removed existing database file: {db_file}")
+    if sqlite_url.exists():
+        sqlite_url.unlink()
+        print(f"Removed existing database: {sqlite_url.name}")
         
-    # Check if the directory for the database file exists, if not create it
-    db_dir = os.path.dirname(db_file)
-    if db_dir and not os.path.exists(db_dir):
-        os.makedirs(db_dir)
-        print(f"Created directory for database: {db_dir}")
+    # Ensure parent directory exists
+    if not sqlite_url.parent.exists():
+        sqlite_url.parent.mkdir(parents=True, exist_ok=True)
+        print(f"Created directory for database: {sqlite_url.parent}")
 
     try:
-        # Establish a connection. This will create the database file.
-        conn = sqlite3.connect(db_file)
+        # Establish a connection (creates the DB file if not exists)
+        conn = sqlite3.connect(sqlite_url)
         cursor = conn.cursor()
-        print(f"Successfully connected to database '{db_file}'.")
+        print(f"Successfully connected to database '{sqlite_url.name}'.")
 
         # Open and read the .sql file
-        with open(sql_file, 'r') as f:
+        with sql_file.open("r") as f:
             sql_script = f.read()
             
         # Execute the entire script
         cursor.executescript(sql_script)
-        print(f"Successfully executed script from '{sql_file}'.")
+        print(f"Successfully executed script from '{sql_file.name}'.")
 
-        # Commit the changes and close the connection
+        # Commit and close
         conn.commit()
         conn.close()
         return True
@@ -41,11 +40,13 @@ def create_database(db_file: str, sql_file: str) -> bool:
         print(f"An SQLite error occurred: {e}")
         return False
 
+
 def main():
-    from databases.helpers import sql_config
-    db_file = sql_config['db_path']
-    sql_file = sql_config['schema_path']
-    if create_database(db_file, sql_file):
+    from databases.utils import sql_config
+    sqlite_url: Path = sql_config.get("url")
+    sql_file: Path = sql_config.get("schema_path")
+
+    if create_database(sqlite_url, sql_file):
         print("Database setup completed successfully.")
     else:
         print("Database setup failed.")

@@ -11,4 +11,6 @@ def load_toml(file_path: str) -> dict:
     return data
 
 config = load_toml('config.toml')
-data_config, sql_config = config['data'], config['sqlite']
+data_config = config['data']
+sql_config = config['sqlite']
+mongodb_config = config.get('mongodb', {})

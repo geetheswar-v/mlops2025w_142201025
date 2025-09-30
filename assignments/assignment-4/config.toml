@@ -1,13 +1,20 @@
 [data]
 path = "data"
 url = "https://archive.ics.uci.edu/static/public/352/online+retail.zip"
-data_file = "data/retail.csv"
-sample_file = "data/sample_retail.csv"
+data_file = "retail.csv"
+sample_file = "sample_retail.csv"
 sample_size = 5000
 random_state = 42
 
 [sqlite]
-schema = "retail"
-db_path = "data/retail.db"
+url = "data/retail.db"
+schema = "retail.db"
 schema_path = "sql/schema.sql"
+
+[mongodb]
+url = "mongodb://localhost:27017"
+db_name = "retail"
+transactions_collection = "transactions"
+customers_collection = "customers"
+
 

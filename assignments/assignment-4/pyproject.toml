@@ -12,12 +12,14 @@ dependencies = [
     "pandas>=2.3.2",
     "requests>=2.32.5",
     "tqdm>=4.67.1",
+    "pymongo>=4.8.0",
 ]
 
 [project.scripts]
 prepare_data = "databases.helpers.prepare_data:main"
 prepare_db = "databases.sqlite:prepare_db"
 populate_db = "databases.sqlite:populate_db"
+ingest_transactions = "databases.mongo.ingest_transactions:main"
 
 
 [build-system]
