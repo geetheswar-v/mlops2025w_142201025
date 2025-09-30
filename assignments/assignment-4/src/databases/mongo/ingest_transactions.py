@@ -3,35 +3,37 @@ from pymongo import MongoClient, ReplaceOne
 from databases.utils import data_config, mongodb_config, load_csv, datetime_parser
 
 
-def build_docs(df: pd.DataFrame) -> list[dict]:
-    docs: list[dict] = []
-    grouped = df.groupby('InvoiceNo')
-    print(f"Grouping into {len(grouped)} unique invoices...")
+def build_transactions_docs(df: pd.DataFrame) -> list[dict]:
+    items_agg = df.groupby(['InvoiceNo', 'StockCode']).agg(
+        Description=('Description', 'first'),
+        Quantity=('Quantity', 'sum'),
+        UnitPrice=('UnitPrice', 'max')
+    ).reset_index()
 
-    for invoice_no, g in grouped:
-        invoice_date = g['InvoiceDate'].iloc[0]
-        customer_id = int(g['CustomerID'].iloc[0])
-        country = g['Country'].iloc[0]
+    nested_items = (
+        items_agg.groupby('InvoiceNo')[['StockCode', 'Description', 'Quantity', 'UnitPrice']]
+        .apply(lambda x: x.to_dict('records'))
+        .reset_index(name='Items')
+    )
 
-        items = g[['StockCode', 'Description', 'Quantity', 'UnitPrice']].to_dict(orient='records')
+    invoice_meta = df[['InvoiceNo', 'InvoiceDate', 'CustomerID', 'Country']].drop_duplicates(subset=['InvoiceNo'])
 
-        docs.append({
-            'InvoiceNo': str(invoice_no),
-            'InvoiceDate': invoice_date.to_pydatetime() if hasattr(invoice_date, 'to_pydatetime') else invoice_date,
-            'CustomerID': customer_id,
-            'Country': country,
-            'Items': items
-        })
+    final_df = pd.merge(invoice_meta, nested_items, on='InvoiceNo')
 
-    print(f"Built {len(docs)} transaction documents")
+    final_df['InvoiceDate'] = final_df['InvoiceDate'].dt.to_pydatetime()
+    final_df['InvoiceNo'] = final_df['InvoiceNo'].astype(str)
+    final_df['CustomerID'] = final_df['CustomerID'].astype(int)
+    
+    docs = final_df.to_dict('records')
+
     return docs
 
 
-def ingest(transactions: list[dict], batch_size: int = 1000):
-    uri = mongodb_config.get('url')
-    db_name = mongodb_config.get('db_name')
-    coll_name = mongodb_config.get('transactions_collection')
-    
+def ingest_transactions(transactions: list[dict], batch_size: int = 1000):
+    uri = mongodb_config.get('uri', 'mongodb://localhost:27017')
+    db_name = mongodb_config.get('db_name', 'retail')
+    coll_name = mongodb_config.get('transactions_collection', 'transactions')
+
     client = MongoClient(uri)
     db = client[db_name]
     coll = db[coll_name]
@@ -47,9 +49,11 @@ def ingest(transactions: list[dict], batch_size: int = 1000):
             processed += len(ops)
             print(f"Upsert batch complete: total processed {processed}")
             ops = []
+
     if ops:
         coll.bulk_write(ops, ordered=False)
         processed += len(ops)
+
     print(f"Done. Total invoices processed (inserted or updated): {processed}.")
 
 
@@ -62,11 +66,11 @@ def main():
     invoice_count = df['InvoiceNo'].nunique()
     print(f"Unique invoices found: {invoice_count}")
 
-    transactions = build_docs(df)
-    if len(transactions) != invoice_count:
+    transactions_documents = build_transactions_docs(df)
+    if len(transactions_documents) != invoice_count:
         print("Warning: built docs count differs from unique invoice count.")
 
-    ingest(transactions)
+    ingest_transactions(transactions_documents)
 
 
 if __name__ == '__main__':
