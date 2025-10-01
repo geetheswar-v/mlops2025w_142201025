@@ -19,8 +19,8 @@ dependencies = [
 prepare_data = "databases.helpers.prepare_data:main"
 prepare_db = "databases.sqlite:prepare_db"
 populate_db = "databases.sqlite:populate_db"
-ingest_transactions = "databases.mongo.ingest_transactions:main"
-ingest_customers = "databases.mongo.ingest_customers:main"
+ingest_collections = "databases.mongo.ingest_collections:main"
+performance_test = "databases.mongo.performance_test:main"
 
 
 [build-system]
