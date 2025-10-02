@@ -11,10 +11,23 @@ url = "data/retail.db"
 schema = "retail.db"
 schema_path = "sql/schema.sql"
 
-[mongodb]
-url = "mongodb://localhost:27017"
+[mongo]
 db_name = "retail"
+
+# transaction Centric collection names
 transactions_collection = "transactions"
-customers_collection = "customers"
+transactions_customers_collection = "customers"
+
+# Customer Centric collection name
+customers_collection = "customers_centric"
+
+[mongo.local]
+url = "mongodb://localhost:27017"
+
+[mongo.atlas]
+host="retailcluster.fwdi4ka.mongodb.net"
+app_name="RetailCluster"
+retry_writes=true
+writes="majority"
 
 

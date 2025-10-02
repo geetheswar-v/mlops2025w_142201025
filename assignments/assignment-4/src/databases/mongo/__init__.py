@@ -1,27 +1,34 @@
-from pymongo import MongoClient, ReplaceOne
+from pymongo import MongoClient, ReplaceOne, InsertOne, UpdateOne, DeleteOne
 from pymongo.errors import ConnectionFailure, OperationFailure, BulkWriteError
-from databases.utils import mongodb_config
+from databases.utils import mongo_config
 
-# Establish a reusable client connection
-def get_mongo_client():
+def get_mongo_client(deployment: str = "local"):
     try:
-        client = MongoClient(mongodb_config['url'], 
-                             maxPoolSize=50,
-                             minPoolSize=10,
-                             serverSelectionTimeoutMS=5000
-                            )
+        config = mongo_config[deployment]
+        
+        client = MongoClient(
+            config['url'],
+            maxPoolSize=50,
+            minPoolSize=10,
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=10000,
+            socketTimeoutMS=30000,
+            retryWrites=True,
+            w='majority'
+        )
         # Test the connection
         client.admin.command('ping')
-        db = client[mongodb_config['db_name']]
-        transactions_collection = db[mongodb_config['transactions_collection']]
-        customers_collection = db[mongodb_config['customers_collection']]
-        print("Successfully connected to MongoDB.")
-        return client, db, transactions_collection, customers_collection
+        db = client[config['db_name']]
+        transactions_collection = db[config['transactions_collection']]
+        transactions_customers_collection = db[config['transactions_customers_collection']]
+        customers_collection = db[config['customers_collection']]
+        
+        deployment_name = "MongoDB Atlas" if deployment == "atlas" else "Local MongoDB"
+        print(f"Successfully connected to {deployment_name} with connection pooling.")
+        return client, db, transactions_collection, transactions_customers_collection, customers_collection
     except ConnectionFailure as e:
-        print(f"Could not connect to MongoDB: {e}")
-        return None, None, None, None
-
-client, db, transactions_collection, customers_collection = get_mongo_client()
+        print(f"Could not connect to MongoDB ({deployment}): {e}")
+        return None, None, None, None, None
 
 # Decorator to handle MongoDB errors
 def handle_mongo_errors(func):
