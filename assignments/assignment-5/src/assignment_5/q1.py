@@ -6,7 +6,7 @@ from collections import Counter
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-run = wandb.init(project="Q1-weak-supervision-ner", job_type="data_analysis", name="conll2003_dataset_analysis_2")
+run = wandb.init(project="Q1-weak-supervision-ner", job_type="data_analysis", name="conll2003_dataset_analysis_3")
 
 def load_dataset():
     logger.info("Loading the CONLL2003 dataset...")
@@ -43,11 +43,11 @@ def summary(dataset):
 
     entity_distribution = dict(entity_counter)
     for entity, count in entity_distribution.items():
-        logging.info(f"Entity: {entity}, Count: {count}")
+        logger.info(f"Entity: {entity}, Count: {count}")
     
     wandb_entity_stats = {f"entity_{k}_count": v for k, v in entity_distribution.items()}
     wandb.summary.update(wandb_entity_stats)
-    logging.info("Entity distribution logged to W&B summary.")
+    logger.info("Entity distribution logged to W&B summary.")
 
 def main():
     dataset = load_dataset()
