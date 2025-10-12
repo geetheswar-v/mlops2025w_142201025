@@ -1,9 +1,13 @@
 {
     "data_source": {
         "name": "cifar10",
-        "path": "data/cifar10",
+        "path": "/home/geetheswar/Programming/Sem7/MLOps_git/assignments/assignment-3/data/cifar10",
         "num_classes": 10,
-        "input_shape": [32,32,3]
+        "input_shape": [
+            32,
+            32,
+            3
+        ]
     },
     "preprocessing": {
         "resize": [

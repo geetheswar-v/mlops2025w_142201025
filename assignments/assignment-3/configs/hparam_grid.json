@@ -5,21 +5,32 @@
             "lr": [0.01],
             "momentum": [0.9],
             "epochs": [3],
-            "optimizer": ["sgd", "adam"]
+            "optimizer": ["sgd", "adam"],
+            "batch_size": [32]
         },
 
         "resnet50": {
             "lr": [0.001],
             "momentum": [0.5],
             "epochs": [2],
-            "optimizer": ["sgd"]
+            "optimizer": ["sgd"],
+            "batch_size": [32]
+        },
+
+        "resnet101": {
+            "lr": [0.01],
+            "momentum": [0.5],
+            "epochs": [1],
+            "optimizer": ["adam"],
+            "batch_size": [8]
         },
 
         "default": {
-          "lr": [1],
+          "lr": [0.1],
           "momentum": [0.0],
           "epochs": [1],
-          "optimizer": ["adam"]
+          "optimizer": ["adam"],
+          "batch_size": [16]
         }
     }
 }

@@ -1,6 +1,6 @@
 # Model selection
 [model]
-architecture = "resnet50"
+architecture = "resnet34"
 
 # Model hyperparameters per architecture
 [model.resnet34]

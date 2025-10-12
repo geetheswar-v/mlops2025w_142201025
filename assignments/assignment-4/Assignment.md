@@ -2,7 +2,6 @@
 
 **Name:** Vedachalam Geetheswar  
 **Roll Number:** 142201025  
-**Github Url:** [mlops2025w_142201025](https://github.com/geetheswar-v/mlops2025w_142201025/tree/main/assignments/assignment-4)
 
 ---
 
