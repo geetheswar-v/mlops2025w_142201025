@@ -26,7 +26,7 @@ def summary(dataset):
     wandb.summary.update(summary_info)
     logger.info("Dataset summary updated in wandb run.")
     
-    logging.info("Calculating entity distribution")
+    logger.info("Calculating entity distribution")
     ner_feature = dataset["train"].features["ner_tags"].feature
     id2label = {i: label for i, label in enumerate(ner_feature.names)}
 
