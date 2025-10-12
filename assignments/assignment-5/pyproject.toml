@@ -7,10 +7,13 @@ authors = [
     { name = "geetheswar-v", email = "geetheswar.edu@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "datasets>=4.2.0",
+    "wandb>=0.22.2",
+]
 
 [project.scripts]
-assignment-5 = "assignment_5:main"
+question-1 = "assignment_5.q1:main"
 
 [build-system]
 requires = ["uv_build>=0.8.3,<0.9.0"]
