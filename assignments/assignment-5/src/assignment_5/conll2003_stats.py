@@ -49,14 +49,20 @@ def summary(dataset, run=None):
             run.summary[f"{split}_total_tokens"] = total_tokens
             for entity, count in main_entity_counts.items():
                 run.summary[f"{split}_entity_dist_{entity}_count"] = count
-                run.summary[f"{split}_entity_dist_{entity}_percent"] = (count / total_tokens) * 100
+                # I thought using percent will increase more summary so I commented it out
+                # run.summary[f"{split}_entity_dist_{entity}_percent"] = (count / total_tokens) * 100
 
     logger.info("Summary computation and logging completed successfully.")
     
 
 def main():
+    project_name = "Q1-weak-supervision-ner"
+    run = wandb.init(project=project_name, job_type="dataset-analysis", name="conll2003-dataset-stats-final")
+    
     dataset = get_conll2003_dataset()
-    summary(dataset)
+    summary(dataset, run)
+    
+    run.finish()
 
 if __name__ == "__main__":
     main()
