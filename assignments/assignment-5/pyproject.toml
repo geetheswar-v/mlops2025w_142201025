@@ -9,11 +9,12 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "datasets>=4.2.0",
+    "snorkel>=0.10.0",
     "wandb>=0.22.2",
 ]
 
 [project.scripts]
-question-1 = "assignment_5.q1:main"
+question-1 = "assignment_5.conll2003_stats:main"
 
 [build-system]
 requires = ["uv_build>=0.8.3,<0.9.0"]
