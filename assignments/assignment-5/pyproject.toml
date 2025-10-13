@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "datasets>=4.2.0",
     "snorkel>=0.10.0",
+    "torchvision>=0.23.0",
     "wandb>=0.22.2",
 ]
 
@@ -17,6 +18,7 @@ dependencies = [
 question-1 = "assignment_5.conll2003_stats:main"
 question-2 = "assignment_5.conll2003_labelling:main"
 question-3 = "assignment_5.conll2003_major_label_voter:main"
+question-4 = "assignment_5.cifar_seq_learning:main"
 
 [build-system]
 requires = ["uv_build>=0.8.3,<0.9.0"]
