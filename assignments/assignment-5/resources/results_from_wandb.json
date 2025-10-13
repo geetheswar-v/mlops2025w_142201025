@@ -1,0 +1,63 @@
+{
+    "question-1": {
+        "test_LOC_entity_count": 1668,
+        "test_MISC_entity_count": 702,
+        "test_ORG_entity_count": 1661,
+        "test_PER_entity_count": 1617,
+        "test_num_samples_sentences": 3453,
+        "test_total_entities": 5648,
+        "train_LOC_entity_count": 7140,
+        "train_MISC_entity_count": 3438,
+        "train_ORG_entity_count": 6321,
+        "train_PER_entity_count": 6600,
+        "train_num_samples_sentences": 14041,
+        "train_total_entities": 23499,
+        "validation_LOC_entity_count": 1837,
+        "validation_MISC_entity_count": 922,
+        "validation_ORG_entity_count": 1341,
+        "validation_PER_entity_count": 1842,
+        "validation_num_samples_sentences": 3250,
+        "validation_total_entities": 5942
+    },
+
+    "question-2": {
+        "lf_org_sup_accuracy": 1,
+        "lf_org_sup_coverage": 0.0099,
+        "lf_years_accuracy": 0.3517,
+        "lf_years_coverage": 0.0336
+    },
+
+    "question-3": {
+        "coverage": 0.0426,
+        "majority_voter_accuracy": 0.3913
+    },
+
+    "question-4": {
+        "Experment-A": {
+            "_step": 202,
+            "dataset": "CIFAR-10",
+            "epoch": 99,
+            "final_cifar100_accuracy": 59.01,
+            "final_cifar10_accuracy": 65.8,
+            "learning_rate": 0,
+            "phase": 2,
+            "test_accuracy": 65.8,
+            "test_loss": 0.9667826414108276,
+            "train_accuracy": 65.702,
+            "train_loss": 0.9516365990346792
+        },
+        "Experment-B": {
+            "_step": 202,
+            "dataset": "CIFAR-100",
+            "epoch": 99,
+            "final_cifar100_accuracy": 8.39,
+            "final_cifar10_accuracy": 57.62,
+            "learning_rate": 0,
+            "phase": 2,
+            "test_accuracy": 8.39,
+            "test_loss": 4.048283863067627,
+            "train_accuracy": 9.654,
+            "train_loss": 3.937961235338328
+        }
+    }
+}

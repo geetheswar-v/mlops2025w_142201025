@@ -1,7 +1,7 @@
 import re
 import wandb
 import pandas as pd
-from assignment_5.datasets import get_conll2003_dataset, get_pandas_df
+from assignment_5.datasets import get_pandas_df
 from snorkel.labeling import labeling_function, PandasLFApplier
 from sklearn.metrics import accuracy_score
 
