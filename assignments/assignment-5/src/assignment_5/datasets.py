@@ -8,3 +8,10 @@ def get_conll2003_dataset():
     for split in dataset.keys():
         dataset_splits[split] = dataset[split]
     return dataset_splits
+
+def get_pandas_df(split="train"):
+    dataset_splits = get_conll2003_dataset()
+    data = dataset_splits[split]
+    tag_names = data.features['ner_tags'].feature.names
+    df = data.to_pandas()
+    return df, tag_names

@@ -1,7 +1,7 @@
 import re
 import wandb
 import pandas as pd
-from assignment_5.datasets import get_conll2003_dataset
+from assignment_5.datasets import get_conll2003_dataset, get_pandas_df
 from snorkel.labeling import labeling_function, PandasLFApplier
 from sklearn.metrics import accuracy_score
 
@@ -30,13 +30,7 @@ def has_entity(row, entity_short_name, tag_names):
             return True
     return False
 
-def main():
-    # Train Dataset
-    dataset_splits = get_conll2003_dataset()
-    data = dataset_splits["train"]
-    tag_names = data.features['ner_tags'].feature.names
-    df = data.to_pandas()
-    
+def labeling_helper(df, tag_names):
     df["y_org"] = df.apply(lambda row: ORGANIZATION if has_entity(row, "ORG", tag_names) else ABSTAIN, axis=1)
     df["y_misc"] = df.apply(lambda row: MISC if has_entity(row, "MISC", tag_names) else ABSTAIN, axis=1)
     
@@ -49,7 +43,15 @@ def main():
     "lf_years":    {"labels": L_train[:, 0], "ground_truth": df.y_misc},
     "lf_org_sup": {"labels": L_train[:, 1], "ground_truth": df.y_org},
     }
+    
+    return lf_eval_map, L_train
+    
 
+def main():
+    # Train Dataset
+    df, tag_names = get_pandas_df("train")
+    lf_eval_map,_ = labeling_helper(df, tag_names)
+    
     run = wandb.init(project="Q2-snorkel-labeling", job_type="Labeling", name="years_and_org_lfs")
 
     for lf_name, eval_data in lf_eval_map.items():
