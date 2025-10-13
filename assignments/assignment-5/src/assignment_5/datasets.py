@@ -1,4 +1,3 @@
-import logging
 from datasets import load_dataset
 
 def get_conll2003_dataset():
