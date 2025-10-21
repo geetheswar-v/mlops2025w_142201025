@@ -1,0 +1,19 @@
+INFO:     Will watch for changes in these directories: ['/home/geetheswar/Programming/Sem7/MLOps_git/class/week8']
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     Started reloader process [24714] using WatchFiles
+W&B API Key loaded: True
+INFO:     Started server process [24717]
+INFO:     Waiting for application startup.
+wandb: Currently logged in as: geetheswar-v (geetheswar-v-iit-pkd) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb:   1 of 1 files downloaded.  
+INFO:     Application startup complete.
+INFO:     127.0.0.1:35904 - "POST /predict HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:48376 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48376 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52502 - "POST /predict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48966 - "POST /predict HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [24717]
+INFO:     Stopping reloader process [24714]
