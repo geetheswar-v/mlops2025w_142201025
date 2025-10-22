@@ -20,4 +20,5 @@ dependencies = [
 [tool.uv.workspace]
 members = [
     "week4",
+    "week8",
 ]
