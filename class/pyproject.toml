@@ -21,4 +21,5 @@ dependencies = [
 members = [
     "week4",
     "week8",
+    "week7",
 ]
